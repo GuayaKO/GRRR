@@ -37,8 +37,7 @@ class Grrr:
             "year": find_in_xml(entry, '<original_publication_year'),
             "average_rating": find_in_xml(entry, '<average_rating'),
             "title": find_in_xml(entry, '<title'),
-            "author": find_in_xml(entry, '<name'),
-            "image_url": find_in_xml(entry, '<image_url')
+            "author": find_in_xml(entry, '<name')
         }
         if save:
             self.books.append(result)
