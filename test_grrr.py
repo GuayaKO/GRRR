@@ -31,3 +31,21 @@ def test_book_query_save():
     obj = Grrr(KEY)
     obj.search_by_title('The Aleph', save=True)
     assert len(obj.books) > 0
+
+def test_book_query_results():
+    obj = Grrr(KEY)
+    result = obj.search_by_title('The Aleph')
+    year = result['year'] == 1945
+    author = result['author'] == 'Jorge Luis Borges'
+    title = result['title'] == 'The Aleph and Other Stories'
+    assert year and author and title
+
+def test_get_book_tags():
+    obj = Grrr(KEY)
+    result = obj.get_book_tags("Harry Potter and the Sorcerer's Stone")
+    assert 'own' in result.keys()
+
+def test_book_tags_count():
+    obj = Grrr(KEY)
+    result = obj.get_book_tags("Harry Potter and the Sorcerer's Stone")
+    assert result['own'] > 20000
