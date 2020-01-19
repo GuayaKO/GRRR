@@ -52,9 +52,27 @@ class Grrr:
         shelf = find_in_xml(xml, '<popular_shelves')
         result = {}
         tags = [
-            ['re-?reads?" count="[0-9]+', 'reread'],
+            ['[a-z]*re-?reads?[-a-z]*" count="[0-9]+', 'reread'],
             ['[a-z]*favou?rites?[-a-z]*" count="[0-9]+', 'favorite'],
-            ['[a-z]*-?own[-a-z]*" count="[0-9]+', 'own']
+            ['[a-z]*-?own[-a-z]*" count="[0-9]+', 'own'],
+            ['[a-z]*business[-a-z]*" count="[0-9]+', 'business'],
+            ['[a-z]*data[-a-z]*" count="[0-9]+', 'data'],
+            ['[a-z]*math[-a-z]*" count="[0-9]+', 'math'],
+            ['[a-z]*statistics?[-a-z]*" count="[0-9]+', 'stats'],
+            ['[a-z]*computer[-a-z]*" count="[0-9]+', 'compsci'],
+            ['[a-z]*economics?[-a-z]*" count="[0-9]+', 'economics'],
+            ['[a-z]*complex[-a-z]*" count="[0-9]+', 'complexity'],
+            ['[a-z]*psychology[-a-z]*" count="[0-9]+', 'psychology'],
+            ['[a-z]*behavio[-a-z]*" count="[0-9]+', 'behaviour'],
+            ['[a-z]*politics[-a-z]*" count="[0-9]+', 'politics'],
+            ['[a-z]*sociology[-a-z]*" count="[0-9]+', 'sociology'],
+            ['[a-z]*anthropology[-a-z]*" count="[0-9]+', 'anthropology'],
+            ['[a-z]*history[-a-z]*" count="[0-9]+', 'history'],
+            ['[a-z]*biology[-a-z]*" count="[0-9]+', 'biology'],
+            ['[a-z]*evolution[-a-z]*" count="[0-9]+', 'evolution'],
+            ['[a-z]*health[-a-z]*" count="[0-9]+', 'health'],
+            ['[a-z]*cogniti[-a-z]*" count="[0-9]+', 'cognitive'],
+            ['[a-z]*neuro[-a-z]*" count="[0-9]+', 'neuroscience']
         ]
         for pattern in tags:
             result[pattern[1]] = 0
@@ -66,9 +84,11 @@ class Grrr:
 if __name__ == '__main__':
     print('\n\nbuilt by Manuel Velarde to gather data for roBERTo.wtf\n')
 
+    # import json
     # KEY = None
     # with open("key.json") as file:
     #     KEY = json.load(file)['key']
 
     # test = Grrr(KEY)
-    # print(test.get_book_tags("Harry Potter and the Sorcerer's Stone"))
+    # print("The Model Thinker: What You Need to Know to Make Data Work for You\n", test.get_book_tags("The Model Thinker: What You Need to Know to Make Data Work for You"))
+    # print("\nBehave: The Biology of Humans at Our Best and Worst\n", test.get_book_tags("Behave: The Biology of Humans at Our Best and Worst"))
