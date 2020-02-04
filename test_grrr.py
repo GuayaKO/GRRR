@@ -49,3 +49,9 @@ def test_book_tags_count():
     obj = Grrr(KEY)
     result = obj.get_book_tags("Harry Potter and the Sorcerer's Stone")
     assert result['own'] > 20000
+
+def test_book_reviews_type():
+    obj = Grrr(KEY)
+    result = obj.get_book_reviews(39088592)
+    assert isinstance(result, list) and len(result) == 10 and isinstance(result[0], str) and len(result[0]) > 0
+    

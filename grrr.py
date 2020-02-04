@@ -2,6 +2,7 @@ import urllib.request
 import re
 
 
+
 def find_in_xml(xml, tag, position=1):
     length = len(tag)
     start = 0
@@ -16,12 +17,23 @@ def find_in_xml(xml, tag, position=1):
     return xml[start:end]
 
 
+def find_iframe_src(xml):
+    tag = "<iframe"
+    start = 0
+    start = xml[start:].find(tag)
+    start += xml[start:].find('src="')+5
+    end = start+xml[start:].find('"')
+    return xml[start:end]
+
+
+
 class Grrr:
     def __init__(self, key):
         if not isinstance(key, str) or not key.isalnum():
             raise ValueError("Invalid key!") 
         self.url_search = 'https://www.goodreads.com/search/index.xml?key={}&'.format(key)
-        self.url_review = 'https://www.goodreads.com/book/title.xml?key={}&'.format(key)
+        self.url_tags = 'https://www.goodreads.com/book/title.xml?key={}&'.format(key)
+        self.url_reviews = 'https://www.goodreads.com/book/show/{}.xml?'+'key={}'.format(key)
         self.books = []
 
     def search_by_title(self, title, save=False):
@@ -32,6 +44,7 @@ class Grrr:
         xml = response.read().decode("utf-8")
         entry = find_in_xml(xml, '<work')
         result = {
+            "book_id": int(find_in_xml(entry, '<id', 2)),
             "rating_count": int(find_in_xml(entry, '<ratings_count')),
             "review_count": int(find_in_xml(entry, '<text_reviews_count')),
             "year": int(find_in_xml(entry, '<original_publication_year')),
@@ -43,11 +56,11 @@ class Grrr:
             self.books.append(result)
         return result
     
-    def get_book_tags(self, title, rating=None):
+    def get_book_tags(self, title):
         query = urllib.parse.urlencode({
             'title': title
         })
-        response = urllib.request.urlopen(self.url_review+query)
+        response = urllib.request.urlopen(self.url_tags+query)
         xml = response.read().decode("utf-8")
         shelf = find_in_xml(xml, '<popular_shelves')
         result = {}
@@ -80,9 +93,29 @@ class Grrr:
                 result[pattern[1]] += int(match[match.find('="')+2:])
         return result
 
+    def get_book_reviews(self, book_id):
+        reviews = []
+        links = []
+        iframe_response = urllib.request.urlopen(self.url_reviews.format(book_id))
+        iframe_xml = iframe_response.read().decode("utf-8")
+        response = urllib.request.urlopen(find_iframe_src(iframe_xml))
+        xml = response.read().decode("utf-8")
+        body = find_in_xml(xml, '<body')
+        link_pattern = r'https:\/\/www\.goodreads\.com\/review\/show\/[0-9]+"'
+        for match in re.findall(link_pattern, body, flags=0):
+            links.append(match[:-1])
+        for link in links:
+            review_response = urllib.request.urlopen(link)
+            review_xml = review_response.read().decode("utf-8")
+            review_pattern = r'<div class="reviewText mediumText description readable" itemprop=\'reviewBody\'>((.|\n)*?)</div>'
+            for match in re.findall(review_pattern, review_xml, flags=0):
+                reviews.append(match[0])
+        return reviews
+
+
 
 if __name__ == '__main__':
-    print('\n\nbuilt by Manuel Velarde to gather data for roBERTo.wtf\n')
+    print('\n\nbuilt by Manuel Velarde to gather data for liBER-Trinus.wtf\n')
 
     # import json
     # KEY = None
@@ -90,5 +123,7 @@ if __name__ == '__main__':
     #     KEY = json.load(file)['key']
 
     # test = Grrr(KEY)
-    # print("The Model Thinker: What You Need to Know to Make Data Work for You\n", test.get_book_tags("The Model Thinker: What You Need to Know to Make Data Work for You"))
-    # print("\nBehave: The Biology of Humans at Our Best and Worst\n", test.get_book_tags("Behave: The Biology of Humans at Our Best and Worst"))
+    # print("The Model Thinker\n", test.search_by_title("The Model Thinker: What You Need to Know to Make Data Work for You"))
+    # print("\nThe Model Thinker\n", test.get_book_reviews(39088592))
+    # print("\nThe Model Thinker\n", len(test.get_book_reviews(39088592)))
+    # print("\nBehave: The Biology of Humans at Our Best and Worst\n", test.get_book_reviews("Behave: The Biology of Humans at Our Best and Worst"))
