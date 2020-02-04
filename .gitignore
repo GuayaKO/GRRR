@@ -130,3 +130,6 @@ dmypy.json
 
 # Goodreads key
 key.json
+
+# VSCode setting
+.vscode/
